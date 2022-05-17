@@ -19,7 +19,7 @@ func init() {
 }
 
 func linkMysql() (db *sql.DB) {
-	dsn := "root:ywh@tcp(121.41.27.5:3306)/" + sqlName + "?charset=utf8"
+	dsn := "root:ywh@tcp(127.0.0.1:3306)/" + sqlName + "?charset=utf8"
 	var err error
 	//连接数据集
 	db, err = sql.Open("mysql", dsn) //open不会检验用户名和密码
