@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	fmt.Println("dasd")
+	fmt.Println("main")
 	data := rand.Int()
 	fmt.Println(data)
 }
