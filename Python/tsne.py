@@ -16,7 +16,7 @@ LIMITNUM = 400000
 
 # mysql连接的配置
 mysqlOption = {
-  "host": "127.0.0.1",
+  "host": "121.41.27.5",
   "user": "root",
   "password": "ywh",
   "database": "Outsourced",
