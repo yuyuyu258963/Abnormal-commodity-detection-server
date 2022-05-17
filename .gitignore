@@ -2,11 +2,12 @@
 
 # dependencies
 /node_modules
+/Model
 /col1_classfy_data
 /col1_classfy_data_sale
 /Datasets
-/TransedData
 /static
+/TransedData
 /FilteredData
 /RedutionRes
 /FilteredData
