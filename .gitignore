@@ -6,6 +6,11 @@
 /col1_classfy_data_sale
 /Datasets
 /TransedData
+/static
+/RedutionRes
+/ITEM_PRICEerror.tsv
+/ITEM_SALES_VOLUMEerror.tsv
+/ITEM_SALES_AMOUNTerror.tsv
 /.pnp
 .pnp.js
 
