@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +46,9 @@ func Cors() gin.HandlerFunc {
 func GetKindData(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	c.Header("Access-Control-Allow-Methods","POST,GET,OPTIONS")
+	allMonth := []string{"6","7","8","9"} 
+	var syg sync.WaitGroup
+	var myLock sync.Mutex
 	
 	jsonParams := make(map[string]string)
 	c.BindJSON(&jsonParams)
@@ -53,16 +57,31 @@ func GetKindData(c *gin.Context) {
 	sendfielNam := jsonParams["fileName"]
 	selectedPathId := jsonParams["selectedPathId"]
 	NumSelectedPathId,_ := strconv.Atoi(selectedPathId)
-	// aimColName := "cate_name_lv" + selectedPathId
-	fileName := selectedMonth + "-CATE_NAME_LV1-" + sendfielNam
 	filterAble :=  NumSelectedPathId > 1
-	// fmt.Println(aimColName, selected)
-	// dat,maxInfo := GetSelectedData(aimColName ,selected)
-	fmt.Println(NumSelectedPathId)
-	dat,maxInfo := readJson(fileName,filterAble,NumSelectedPathId,selected)
-
-	errDataLine := runBoxCheck(fileName)
-	// classedData, MaxMinData := runDBSCAN(dat)
+	var dat SendProductsData
+	var maxInfo [][]interface{}
+	var errDataLine []float64
+	if selectedMonth != "所有月份" {
+		fileName := selectedMonth + "-CATE_NAME_LV1-" + sendfielNam
+		dat,maxInfo = readJson(fileName,filterAble,NumSelectedPathId,selected)
+		errDataLine = runBoxCheck(fileName)
+	} else {
+		syg.Add(4)
+		for _,v := range allMonth {
+			itemName := v
+			go func() {
+				fileName := itemName + "-CATE_NAME_LV1-" + sendfielNam
+				itemdat,itemmaxInfo := readJson(fileName,filterAble,NumSelectedPathId,selected)
+				myLock.Lock()
+				errDataLine = runBoxCheck(fileName)
+				dat = append(dat, itemdat...)
+				maxInfo = itemmaxInfo
+				myLock.Unlock()
+				syg.Done()
+			}()
+		}
+		syg.Wait()
+	}
 
 	fmt.Printf("data:%v\n", jsonParams)
 	c.JSON(200, gin.H{
@@ -71,8 +90,6 @@ func GetKindData(c *gin.Context) {
 		"DataLen":				len(dat),
 		"maxInfo": 				maxInfo,
 		"errDataLine":		errDataLine,
-		// "classedData": 		classedData,
-		// "MaxMinData" : 		MaxMinData,
 	})
 }
 
